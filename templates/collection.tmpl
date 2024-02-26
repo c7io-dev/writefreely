@@ -46,18 +46,14 @@
 				<li class="has-submenu"><a onclick="void(0)">&#9776; Menu</a>
 					<ul>
 						{{ if .IsOwner }}
-							{{if .SingleUser}}
-							<li><a href="/me/new">New Post</a></li>
-							{{else}}
-							<li><a href="/#{{.Alias}}" class="write">{{.SiteName}}</a></li>
-							{{end}}
-							{{if .SimpleNav}}<li><a href="/new#{{.Alias}}">New Post</a></li>{{end}}
+							<li><a href="/new#{{.Alias}}">New Post</a></li>
 							<li><a href="/me/c/{{.Alias}}">Customize</a></li>
 							<li><a href="/me/c/{{.Alias}}/stats">Stats</a></li>
 							<li><a href="/me/c/{{.Alias}}/subscribers">Subscribers</a></li>
-							<li class="separator"><hr /></li>
-							{{if not .SingleUser}}<li><a href="/me/c/"><img class="ic-18dp" src="/img/ic_blogs_dark@2x.png" /> View Blogs</a></li>{{end}}
-							<li><a href="/me/posts/"><img class="ic-18dp" src="/img/ic_list_dark@2x.png" /> View Drafts</a></li>
+                                                       <li><a href="/me/posts/"><img class="ic-18dp" src="/img/ic_list_dark@2x.png" /> View Drafts</a></li>
+                                                       <li class="separator"><hr /></li>
+							<li><a href="/">{{.SiteName}}</a></li>
+							<li><a href="/me/logout">Log out</a></li>
 						{{ else }}
 							<li><a href="/login">Log in{{if .IsProtected}} to {{.DisplayTitle}}{{end}}</a></li>
 							{{if .IsProtected}}
