@@ -242,11 +242,6 @@ func handleViewHome(app *App, w http.ResponseWriter, r *http.Request) error {
 			}
 		}
 
-		if u != nil {
-			// User is logged in, so show the Pad
-			return handleViewPad(app, w, r)
-		}
-
 		if app.cfg.App.Private {
 			return viewLogin(app, w, r)
 		}
