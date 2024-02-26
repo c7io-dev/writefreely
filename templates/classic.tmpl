@@ -67,7 +67,7 @@
 				{{if or (not .Editing) .EditCollection }}
 				<div class="tool"><a href="#publish" title="Publish" id="publish"><img class="ic-24dp" src="/img/ic_send_dark@2x.png" /></a></div>
 				{{ else }}
-				<div class="tool"><a href="#publish" title="Publish" id="publish"><img class="ic-24dp" src="/img/ic_edit_dark@2x.png" /></a></div>
+				<div class="tool"><a href="#publish" title="Publish" id="publish"><img class="ic-24dp" src="/img/ic_save_dark@2x.png" /></a></div>
 				{{ end }}
 			</div>
 		</header>
@@ -312,7 +312,7 @@
 				document.getElementById('target-name').innerText = newText.join(' ');
 				if (targetName === 'anonymous') {
 					$btnPublish.el.title = 'Save';
-					$btnPublish.el.childNodes[0].src = '/img/ic_edit' + suffix + '@2x.png';
+					$btnPublish.el.childNodes[0].src = '/img/ic_save' + suffix + '@2x.png';
 				} else {
 					$btnPublish.el.title = 'Publish';
 					$btnPublish.el.childNodes[0].src = '/img/ic_send' + suffix + '@2x.png';
