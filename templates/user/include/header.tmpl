@@ -7,7 +7,6 @@
 					<ul><li><a href="/" title="View blog" class="title">{{.SiteName}}</a> <img class="ic-18dp" src="/img/ic_down_arrow_dark@2x.png" />
 						<ul>
 							{{if .IsAdmin}}<li><a href="/admin">Admin dashboard</a></li>{{end}}
-							<li><a href="/me/settings">Account settings</a></li>
 							<li><a href="/me/import">Import posts</a></li>
 							<li><a href="/me/export">Export</a></li>
 							<li class="separator"><hr /></li>
@@ -34,7 +33,6 @@
 				<nav class="dropdown-nav">
 					<ul><li class="has-submenu"><a>{{.Username}}</a> <img class="ic-18dp" src="/img/ic_down_arrow_dark@2x.png" /><ul>
 							{{if .IsAdmin}}<li><a href="/admin">Admin dashboard</a></li>{{end}}
-							<li><a href="/me/settings">Account settings</a></li>
 							<li><a href="/me/import">Import posts</a></li>
 							<li><a href="/me/export">Export</a></li>
 							{{if .CanInvite}}<li><a href="/me/invites">Invite people</a></li>{{end}}
