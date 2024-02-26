@@ -317,7 +317,7 @@ func configureOauthRoutes(parentHandler *Handler, r *mux.Router, app *App, oauth
 	}
 	r.HandleFunc("/oauth/"+oauthClient.GetProvider(), parentHandler.OAuth(handler.viewOauthInit)).Methods("GET")
 	r.HandleFunc("/oauth/callback/"+oauthClient.GetProvider(), parentHandler.OAuth(handler.viewOauthCallback)).Methods("GET")
-	r.HandleFunc("/oauth/signup", parentHandler.OAuth(handler.viewOauthSignup)).Methods("POST")
+	//r.HandleFunc("/oauth/signup", parentHandler.OAuth(handler.viewOauthSignup)).Methods("POST")
 }
 
 func (h oauthHandler) viewOauthCallback(app *App, w http.ResponseWriter, r *http.Request) error {
@@ -399,9 +399,6 @@ func (h oauthHandler) viewOauthCallback(app *App, w http.ResponseWriter, r *http
 		if !i.Active(app.db) {
 			return impart.HTTPError{http.StatusNotFound, "Invite link has expired."}
 		}
-	} else if !app.cfg.App.OpenRegistration {
-		addSessionFlash(app, w, r, ErrUserNotFound.Error(), nil)
-		return impart.HTTPError{http.StatusFound, "/login"}
 	}
 
 	displayName := tokenInfo.DisplayName
@@ -467,6 +464,6 @@ func loginOrFail(store sessions.Store, w http.ResponseWriter, r *http.Request, u
 		fmt.Println("error saving session", err)
 		return err
 	}
-	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	http.Redirect(w, r, "/"+user.Username, http.StatusTemporaryRedirect)
 	return nil
 }
