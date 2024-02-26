@@ -107,7 +107,7 @@ func InitRoutes(apper Apper, r *mux.Router) *mux.Router {
 	me.HandleFunc("/export", handler.User(viewExportOptions)).Methods("GET")
 	me.HandleFunc("/export.json", handler.Download(viewExportFull, UserLevelUser)).Methods("GET")
 	me.Path("/import").Handler(csrf.Protect(apper.App().keys.CSRFKey, csrf.Path("/"))(handler.User(viewImport))).Methods("GET")
-	me.Path("/settings").Handler(csrf.Protect(apper.App().keys.CSRFKey, csrf.Path("/"))(handler.User(viewSettings))).Methods("GET")
+	//me.Path("/settings").Handler(csrf.Protect(apper.App().keys.CSRFKey, csrf.Path("/"))(handler.User(viewSettings))).Methods("GET")
 	me.Path("/invites").Handler(csrf.Protect(apper.App().keys.CSRFKey, csrf.Path("/"))(handler.User(handleViewUserInvites))).Methods("GET")
 	me.HandleFunc("/logout", handler.Web(viewLogout, UserLevelNone)).Methods("GET")
 
@@ -116,8 +116,8 @@ func InitRoutes(apper Apper, r *mux.Router) *mux.Router {
 	apiMe.HandleFunc("/", handler.All(viewMeAPI)).Methods("GET")
 	apiMe.HandleFunc("/posts", handler.UserWebAPI(viewMyPostsAPI)).Methods("GET")
 	apiMe.HandleFunc("/collections", handler.UserAPI(viewMyCollectionsAPI)).Methods("GET")
-	apiMe.HandleFunc("/password", handler.All(updatePassphrase)).Methods("POST")
-	apiMe.Path("/self").Handler(csrfProtectForm(apper.App().keys.CSRFKey, handler.All(updateSettings))).Methods("POST")
+	//apiMe.HandleFunc("/password", handler.All(updatePassphrase)).Methods("POST")
+	//apiMe.Path("/self").Handler(csrfProtectForm(apper.App().keys.CSRFKey, handler.All(updateSettings))).Methods("POST")
 	apiMe.Path("/invites").Handler(csrf.Protect(apper.App().keys.CSRFKey, csrf.Path("/"))(handler.User(handleCreateUserInvite))).Methods("POST")
 	apiMe.Path("/import").Handler(csrf.Protect(apper.App().keys.CSRFKey, csrf.Path("/"))(handler.User(handleImport))).Methods("POST")
 	// OAuth is the only way in, and users can't set a password, so unlinking it
