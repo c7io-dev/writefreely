@@ -52,9 +52,8 @@
 {{if eq (len .AnonymousPosts) 10}}<p id="load-more-p"><a href="#load">Load more...</a></p>{{end}}
 {{ else }}<div id="no-posts-published">
 	<p>Your anonymous and draft posts will show up here once you've published some. You'll be able to share them individually (without a blog) or move them to a blog when you're ready.</p>
-	{{if not .SingleUser}}<p>Alternatively, see your blogs and their posts on your <a href="/me/c/">Blogs</a> page.</p>{{end}}
 
-	<p class="text-cta"><a href="{{if .SingleUser}}/me/new{{else}}/{{end}}">Start writing</a></p></div>{{ end }}
+	<p class="text-cta"><a href="{{if .SingleUser}}/me/new{{else}}/new{{end}}">Start writing</a></p></div>{{ end }}
 
 <div id="moving"></div>
 
