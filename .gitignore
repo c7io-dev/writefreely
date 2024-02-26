@@ -10,3 +10,6 @@ tmp
 *.db
 
 bindata.go
+package.json
+package-lock.json
+writefreely
