@@ -122,7 +122,9 @@ func InitRoutes(apper Apper, r *mux.Router) *mux.Router {
 	apiMe.HandleFunc("/self", handler.All(updateSettings)).Methods("POST")
 	apiMe.HandleFunc("/invites", handler.User(handleCreateUserInvite)).Methods("POST")
 	apiMe.HandleFunc("/import", handler.User(handleImport)).Methods("POST")
-	apiMe.HandleFunc("/oauth/remove", handler.User(removeOauth)).Methods("POST")
+	// OAuth is the only way in, and users can't set a password, so unlinking it
+	// would lock them out permanently.
+	//apiMe.HandleFunc("/oauth/remove", handler.User(removeOauth)).Methods("POST")
 
 	// Sign up validation
 	write.HandleFunc("/api/alias", handler.All(handleUsernameCheck)).Methods("POST")
@@ -167,7 +169,11 @@ func InitRoutes(apper Apper, r *mux.Router) *mux.Router {
 	posts.HandleFunc("/{post:[a-zA-Z0-9]+}", handler.All(deletePost)).Methods("DELETE")
 	posts.HandleFunc("/{post:[a-zA-Z0-9]+}/{property}", handler.AllReader(fetchPostProperty)).Methods("GET")
 
-	write.HandleFunc("/auth/signup", handler.Web(handleWebSignup, UserLevelNoneRequired)).Methods("POST")
+	// Password registration is disabled; OAuth is the only way in. This can't be
+	// left to config: unlike /auth/login, this endpoint never checks
+	// disable_password_auth, and its closed-registration check is satisfied by any
+	// non-empty invite_code, which it never validates.
+	//write.HandleFunc("/auth/signup", handler.Web(handleWebSignup, UserLevelNoneRequired)).Methods("POST")
 	write.HandleFunc("/auth/login", handler.Web(webLogin, UserLevelNoneRequired)).Methods("POST")
 
 	write.HandleFunc("/admin", handler.Admin(handleViewAdminDash)).Methods("GET")

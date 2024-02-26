@@ -21,7 +21,7 @@ import (
 
 	"github.com/writeas/impart"
 	"github.com/writeas/web-core/auth"
-	"github.com/writeas/web-core/log"
+	"github.com/writefreely/writefreely/author"
 	"github.com/writefreely/writefreely/page"
 )
 
@@ -175,57 +175,50 @@ func (h oauthHandler) validateOauthSignup(r *http.Request) error {
 }
 
 func (h oauthHandler) showOauthSignupPage(app *App, w http.ResponseWriter, r *http.Request, tp *oauthSignupPageParams, errMsg error) error {
-	username := tp.TokenUsername
-	collTitle := tp.TokenAlias
-	email := tp.TokenEmail
+	var err error
+	hashedPass := []byte{}
+	hasPass := false
+	// Mastodon handles are [a-z0-9_], so lowercasing and swapping underscores for
+	// hyphens lands inside our charset without collapsing two distinct handles onto
+	// one name. Anything that still fails validation (leading hyphen, too short,
+	// reserved) has no signup form left to correct it on, so fail the signup rather
+	// than create a user whose blog is unreachable.
+	username := strings.Replace(strings.ToLower(tp.TokenUsername), "_", "-", -1)
+	if !author.IsValidUsername(h.Config, username) {
+		return impart.HTTPError{Status: http.StatusBadRequest, Message: fmt.Sprintf("Username %q is reserved or isn't valid on this instance.", username)}
+	}
+	newUser := &User{
+		Username:   username,
+		HashedPass: hashedPass,
+		HasPass:    hasPass,
+		Email:      prepareUserEmail("", h.EmailKey),
+		Created:    time.Now().Truncate(time.Second).UTC(),
+	}
+	displayName := tp.TokenAlias
+	if len(displayName) == 0 {
+		displayName = tp.TokenUsername
+	}
+	displayName = displayName + "'s Blog"
 
-	session, err := app.sessionStore.Get(r, cookieName)
+	err = h.DB.CreateUser(h.Config, newUser, displayName, "")
 	if err != nil {
-		// Ignore this
-		log.Error("Unable to get session; ignoring: %v", err)
+		return err
 	}
 
-	if tmpValue := r.FormValue(oauthParamUsername); len(tmpValue) > 0 {
-		username = tmpValue
-	}
-	if tmpValue := r.FormValue(oauthParamAlias); len(tmpValue) > 0 {
-		collTitle = tmpValue
-	}
-	if tmpValue := r.FormValue(oauthParamEmail); len(tmpValue) > 0 {
-		email = tmpValue
+	// Log invite if needed
+	if tp.InviteCode != "" {
+		err = app.db.CreateInvitedUser(tp.InviteCode, newUser.ID)
+		if err != nil {
+			return err
+		}
 	}
 
-	p := &viewOauthSignupVars{
-		StaticPage: pageForReq(app, r),
-		To:         r.FormValue("to"),
-		Flashes:    []template.HTML{},
-
-		AccessToken:     tp.AccessToken,
-		TokenUsername:   tp.TokenUsername,
-		TokenAlias:      tp.TokenAlias,
-		TokenEmail:      tp.TokenEmail,
-		TokenRemoteUser: tp.TokenRemoteUser,
-		Provider:        tp.Provider,
-		ClientID:        tp.ClientID,
-		TokenHash:       tp.TokenHash,
-		InviteCode:      tp.InviteCode,
-
-		LoginUsername: username,
-		Alias:         collTitle,
-		Email:         email,
-	}
-
-	// Display any error messages
-	flashes, _ := getSessionFlashes(app, w, r, session)
-	for _, flash := range flashes {
-		p.Flashes = append(p.Flashes, template.HTML(flash))
-	}
-	if errMsg != nil {
-		p.Flashes = append(p.Flashes, template.HTML(errMsg.Error()))
-	}
-	err = pages["signup-oauth.tmpl"].ExecuteTemplate(w, "base", p)
+	err = h.DB.RecordRemoteUserID(r.Context(), newUser.ID, tp.TokenRemoteUser, tp.Provider, tp.ClientID, tp.AccessToken)
 	if err != nil {
-		log.Error("Unable to render signup-oauth: %v", err)
+		return err
+	}
+
+	if err := loginOrFail(h.Store, w, r, newUser); err != nil {
 		return err
 	}
 	return nil
