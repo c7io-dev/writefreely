@@ -58,7 +58,7 @@ var (
 	debugging bool
 
 	// Software version can be set from git env using -ldflags
-	softwareVer = "0.15.0"
+	softwareVer = "0.15.0-c7"
 
 	// DEPRECATED VARS
 	isSingleUser bool
@@ -240,11 +240,6 @@ func handleViewHome(app *App, w http.ResponseWriter, r *http.Request) error {
 			if !app.cfg.App.Private || u != nil {
 				return viewLocalTimeline(app, w, r)
 			}
-		}
-
-		if u != nil {
-			// User is logged in, so show the Pad
-			return handleViewPad(app, w, r)
 		}
 
 		if app.cfg.App.Private {
