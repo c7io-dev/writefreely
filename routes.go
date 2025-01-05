@@ -159,12 +159,12 @@ func InitRoutes(apper Apper, r *mux.Router) *mux.Router {
 	// Handle posts
 	write.HandleFunc("/api/posts", handler.All(newPost)).Methods("POST")
 	posts := write.PathPrefix("/api/posts/").Subrouter()
+	posts.HandleFunc("/claim", handler.All(addPost)).Methods("POST")
+	posts.HandleFunc("/disperse", handler.All(dispersePost)).Methods("POST")
 	posts.HandleFunc("/{post:[a-zA-Z0-9]+}", handler.AllReader(fetchPost)).Methods("GET")
 	posts.HandleFunc("/{post:[a-zA-Z0-9]+}", handler.All(existingPost)).Methods("POST", "PUT")
 	posts.HandleFunc("/{post:[a-zA-Z0-9]+}", handler.All(deletePost)).Methods("DELETE")
 	posts.HandleFunc("/{post:[a-zA-Z0-9]+}/{property}", handler.AllReader(fetchPostProperty)).Methods("GET")
-	posts.HandleFunc("/claim", handler.All(addPost)).Methods("POST")
-	posts.HandleFunc("/disperse", handler.All(dispersePost)).Methods("POST")
 
 	write.HandleFunc("/auth/signup", handler.Web(handleWebSignup, UserLevelNoneRequired)).Methods("POST")
 	write.HandleFunc("/auth/login", handler.Web(webLogin, UserLevelNoneRequired)).Methods("POST")
