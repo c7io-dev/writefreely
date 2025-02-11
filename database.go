@@ -48,6 +48,8 @@ const (
 
 	driverMySQL  = "mysql"
 	driverSQLite = "sqlite3"
+
+	default_signature = "---\n_All rights reserved. Any distribution, remixing, adaptation, or derivative works of this blog content are strictly prohibited without prior written consent from the author._"
 )
 
 var (
@@ -225,7 +227,7 @@ func (db *datastore) CreateUser(cfg *config.Config, u *User, collectionTitle str
 	if collectionTitle == "" {
 		collectionTitle = u.Username
 	}
-	res, err = t.Exec("INSERT INTO collections (alias, title, description, privacy, owner_id, view_count) VALUES (?, ?, ?, ?, ?, ?)", u.Username, collectionTitle, collectionDesc, defaultVisibility(cfg), u.ID, 0)
+	res, err = t.Exec("INSERT INTO collections (alias, title, description, privacy, owner_id, view_count, post_signature) VALUES (?, ?, ?, ?, ?, ?, ?)", u.Username, collectionTitle, collectionDesc, defaultVisibility(cfg), u.ID, 0, default_signature)
 	if err != nil {
 		t.Rollback()
 		if db.isDuplicateKeyErr(err) {
@@ -296,7 +298,7 @@ func (db *datastore) CreateCollection(cfg *config.Config, alias, title string, u
 	}
 
 	// All good, so create new collection
-	res, err := db.Exec("INSERT INTO collections (alias, title, description, privacy, owner_id, view_count) VALUES (?, ?, ?, ?, ?, ?)", alias, title, "", defaultVisibility(cfg), userID, 0)
+	res, err := db.Exec("INSERT INTO collections (alias, title, description, privacy, owner_id, view_count, post_signature) VALUES (?, ?, ?, ?, ?, ?, ?)", alias, title, "", defaultVisibility(cfg), userID, 0, default_signature)
 	if err != nil {
 		if db.isDuplicateKeyErr(err) {
 			return nil, impart.HTTPError{http.StatusConflict, "Collection already exists."}
